@@ -550,6 +550,7 @@
       setTimeout(() => {
         try {
           const calculations = performCalculations(input);
+          updateBatteryDisplay(input);
           displayResults(calculations);
           saveBatteryLevel(input);
           hideLoading();
