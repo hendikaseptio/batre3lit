@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Batre3Lit - Enhanced</title>
+  <title>Stareer Battery Calculator</title>
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="site.webmanifest">
   <meta name="theme-color" content="#696ccf">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
   <style>
     :root {
       --primary-color: #3498db;
@@ -48,7 +48,7 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: var(--shadow);
-      max-width: 480px;
+      max-width: 500px;
       width: 100%;
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
@@ -73,6 +73,76 @@
       color: var(--medium-text);
       font-size: 0.9rem;
       margin: 0;
+    }
+
+    .battery-selector {
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+      border-radius: 15px;
+      padding: 20px;
+      margin-bottom: 25px;
+      border: 2px solid rgba(52, 152, 219, 0.1);
+    }
+
+    .battery-type-card {
+      background: rgba(255, 255, 255, 0.8);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .battery-type-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .battery-type-card.selected {
+      border-color: var(--primary-color);
+      background: rgba(52, 152, 219, 0.1);
+      box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .battery-type-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .battery-specs {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .battery-info h5 {
+      margin: 0 0 5px 0;
+      color: var(--dark-text);
+      font-weight: 600;
+    }
+
+    .battery-details {
+      font-size: 0.85rem;
+      color: var(--medium-text);
+      margin: 0;
+    }
+
+    .battery-stats {
+      text-align: right;
+      font-size: 0.9rem;
+    }
+
+    .battery-stats div {
+      margin-bottom: 3px;
+    }
+
+    .stat-label {
+      color: var(--medium-text);
+      font-size: 0.8rem;
+    }
+
+    .stat-value {
+      color: var(--dark-text);
+      font-weight: 600;
     }
 
     .battery-display {
@@ -294,6 +364,34 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
+    .radio-custom {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-radius: 50%;
+      margin-right: 10px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .radio-custom:checked {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+    }
+
+    .radio-custom:checked::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: white;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
     /* Responsive Design */
     @media (max-width: 576px) {
       body {
@@ -319,14 +417,15 @@
       .battery-display {
         padding: 15px;
       }
-    }
 
-    /* Dark mode support */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --light-bg: #06090c;
-        --dark-text: #06090c;
-        --medium-text: #374e64;
+      .battery-specs {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .battery-stats {
+        text-align: left;
       }
     }
   </style>
@@ -336,14 +435,66 @@
   <div class="container-main">
     <div class="header">
       <h1>Batre3Lit</h1>
-      <p>Kalkulator Baterai Stareer 3 Lit</p>
+      <p>Kalkulator Baterai Multi-Type</p>
+    </div>
+
+    <!-- Battery Type Selection -->
+    <div class="battery-selector">
+      <h5 class="mb-3">
+        <i class="bi bi-battery-charging text-primary"></i>
+        Pilih Tipe Baterai
+      </h5>
+      
+      <div class="battery-type-card" onclick="selectBatteryType('A')" id="battery-a">
+        <div class="battery-specs">
+          <div class="battery-info">
+            <h5>
+              <input type="radio" name="batteryType" value="A" class="radio-custom" id="radio-a">
+              Baterai A - Basic
+            </h5>
+            <p class="battery-details">48V 24Ah - High Capacity</p>
+          </div>
+          <div class="battery-stats">
+            <div>
+              <span class="stat-label">Jarak:</span>
+              <span class="stat-value">~70 km</span>
+            </div>
+            <div>
+              <span class="stat-label">Kapasitas:</span>
+              <span class="stat-value">1152 Wh</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="battery-type-card" onclick="selectBatteryType('B')" id="battery-b">
+        <div class="battery-specs">
+          <div class="battery-info">
+            <h5>
+              <input type="radio" name="batteryType" value="B" class="radio-custom" id="radio-b">
+              Baterai B - Extra
+            </h5>
+            <p class="battery-details">48V 20Ah - Compact Size</p>
+          </div>
+          <div class="battery-stats">
+            <div>
+              <span class="stat-label">Jarak:</span>
+              <span class="stat-value">~58 km</span>
+            </div>
+            <div>
+              <span class="stat-label">Kapasitas:</span>
+              <span class="stat-value">960 Wh</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="battery-display">
       <div class="row align-items-center">
         <div class="col-7">
           <h2 id="battery-percentage" class="battery-percentage text-muted">--</h2>
-          <div class="battery-status" id="battery-status">Masukkan persentase baterai</div>
+          <div class="battery-status" id="battery-status">Pilih tipe baterai dan masukkan persentase</div>
           <div class="progress-bar">
             <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
           </div>
@@ -352,7 +503,7 @@
           <i id="battery-icon" class="bi bi-battery battery-icon text-muted"></i>
           <div class="brand-info mt-2">
             <h4>Stareer</h4>
-            <p>3 Lit</p>
+            <p id="battery-type-display">Pilih Tipe</p>
           </div>
         </div>
       </div>
@@ -407,29 +558,66 @@
         </div>
         <div class="result-value" id="completion-time">--</div>
       </div>
-      
-      <div class="result-item">
-        <div class="result-label">
-          <i class="bi bi-lightning text-info"></i>
-          Estimasi Konsumsi
+    </div>
+    <div class="text-center mt-3">
+        <small class="text-secondary">Dikembangkan oleh Hendika Septio</small>
+        <div class="d-flex mx-auto w-100 justify-content-center">
+          <a class="text-dark m-2" href="https://www.youtube.com/@hendikaseptio5135"><i class="bi bi-youtube"></i></a>
+          <a class="text-dark m-2" href="https://www.facebook.com/kandangscript/"><i class="bi bi-facebook"></i></a>
+          <a class="text-dark m-2" href="https://www.instagram.com/hendika_septio/"><i class="bi bi-instagram"></i></a>
         </div>
-        <div class="result-value" id="power-consumption">-- Wh/km</div>
-      </div>
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Configuration constants
-    const CONFIG = {
-      TOTAL_DISTANCE: 60, // km
-      BATTERY_CAPACITY_WH: 1152, // 48V * 24Ah = 1152 Wh
-      CHARGER_POWER: 144, // 48V * 3A = 144W
-      CHARGING_EFFICIENCY: 1.15, // 15% loss factor
-      POWER_CONSUMPTION_PER_KM: 19.2 // Wh/km (1152 Wh / 60 km)
+    // Battery configurations - Updated based on real usage data
+    const BATTERY_CONFIGS = {
+      A: {
+        voltage: 48, // V
+        capacity: 24, // Ah
+        totalDistance: 69.8, // km (calculated from real data: 30km / 43% * 100%)
+        batteryCapacityWh: 1152, // 48V * 24Ah
+        powerConsumptionPerKm: 16.5, // Adjusted based on real usage
+        name: "Basic 24Ah",
+        realWorldFactor: 0.997 // Real vs theoretical efficiency
+      },
+      B: {
+        voltage: 48, // V
+        capacity: 20, // Ah
+        totalDistance: 57.7, // km (calculated from real data: 30km / 52% * 100%)
+        batteryCapacityWh: 960, // 48V * 20Ah
+        powerConsumptionPerKm: 16.6, // Based on real usage (960Wh / 57.7km)
+        name: "Extra 20Ah",
+        realWorldFactor: 0.996 // Real vs theoretical efficiency
+      }
+    };
+
+    // Charger configuration - Updated based on real charging data
+    const CHARGER_CONFIG = {
+      voltage: 54.6, // V
+      current: 3, // A
+      power: 163.8, // 54.6V * 3A = 163.8W (theoretical)
+      batterySpecific: {
+        A: {
+          // Real data: 22% to 100% = 78% in 6h51m = 11.38%/hour
+          realChargingRate: 11.38, // %/hour (from 22% to 100% in 6h51m)
+          avgPower: 127.2, // W (calculated: 1152Wh * 0.78 / 6.85h)
+          fullChargeBuffer: 10/60, // 10 minutes extra for true 100% (specific to battery A)
+          chargerVersion: 'new' // newer charger is faster
+        },
+        B: {
+          // Smaller battery charges faster due to lower capacity
+          realChargingRate: 13.65, // %/hour (960Wh vs 1152Wh = 20% faster)
+          avgPower: 105.6, // W (proportionally adjusted for capacity)
+          fullChargeBuffer: 0, // No buffer needed for battery B
+          chargerVersion: 'standard'
+        }
+      }
     };
 
     // State management
+    let selectedBatteryType = null;
     let currentBatteryLevel = 0;
     let lastCalculationTime = 0;
 
@@ -438,14 +626,13 @@
     const batteryPercentage = document.getElementById('battery-percentage');
     const batteryIcon = document.getElementById('battery-icon');
     const batteryStatus = document.getElementById('battery-status');
+    const batteryTypeDisplay = document.getElementById('battery-type-display');
     const progressFill = document.getElementById('progress-fill');
     const results = document.getElementById('results');
     const loading = document.getElementById('loading');
 
     // Initialize app
     window.addEventListener('load', initializeApp);
-    // batteryInput.addEventListener('input', handleBatteryInput);
-    // batteryInput.addEventListener('keypress', handleKeyPress);
 
     function initializeApp() {
       loadPreviousData();
@@ -454,8 +641,14 @@
     }
 
     function loadPreviousData() {
+      const savedBatteryType = localStorage.getItem('selectedBatteryType');
       const savedBattery = localStorage.getItem('lastBatteryInput');
-      if (savedBattery !== null && savedBattery !== '') {
+      
+      if (savedBatteryType && ['A', 'B'].includes(savedBatteryType)) {
+        selectBatteryType(savedBatteryType);
+      }
+      
+      if (savedBattery !== null && savedBattery !== '' && selectedBatteryType) {
         const level = parseFloat(savedBattery);
         if (level >= 0 && level <= 100) {
           batteryInput.value = level;
@@ -465,21 +658,34 @@
       }
     }
 
-    function handleBatteryInput(event) {
-      const value = parseFloat(event.target.value);
-      if (!isNaN(value) && value >= 0 && value <= 100) {
-        updateBatteryDisplay(value);
-        clearTimeout(lastCalculationTime);
-        lastCalculationTime = setTimeout(() => {
-          calculateAll();
-        }, 500); // Debounce calculation
+    function selectBatteryType(type) {
+      selectedBatteryType = type;
+      
+      // Update UI
+      document.querySelectorAll('.battery-type-card').forEach(card => {
+        card.classList.remove('selected');
+      });
+      document.getElementById(`battery-${type.toLowerCase()}`).classList.add('selected');
+      
+      // Update radio buttons
+      document.getElementById(`radio-${type.toLowerCase()}`).checked = true;
+      
+      // Update display
+      const config = BATTERY_CONFIGS[type];
+      batteryTypeDisplay.textContent = config.name;
+      
+      // Update battery status
+      if (batteryInput.value) {
+        batteryStatus.textContent = `${config.name} - Siap dihitung`;
       } else {
-        resetDisplay();
+        batteryStatus.textContent = `${config.name} - Masukkan persentase baterai`;
       }
-    }
-
-    function handleKeyPress(event) {
-      if (event.key === 'Enter') {
+      
+      // Save selection
+      localStorage.setItem('selectedBatteryType', type);
+      
+      // Recalculate if battery level is already entered
+      if (batteryInput.value) {
         calculateAll();
       }
     }
@@ -498,22 +704,25 @@
       batteryIcon.className = 'bi battery-icon';
       batteryIcon.classList.remove('text-muted', 'text-success', 'text-warning', 'text-danger');
       
+      const config = selectedBatteryType ? BATTERY_CONFIGS[selectedBatteryType] : null;
+      const statusSuffix = config ? ` - ${config.name}` : '';
+      
       if (percentage >= 75) {
         batteryIcon.classList.add('bi-battery-full', 'text-success');
         batteryPercentage.classList.add('text-success');
-        batteryStatus.textContent = 'Baterai Penuh';
+        batteryStatus.textContent = 'Baterai Penuh' + statusSuffix;
       } else if (percentage >= 50) {
         batteryIcon.classList.add('bi-battery-half', 'text-success');
         batteryPercentage.classList.add('text-success');
-        batteryStatus.textContent = 'Baterai Cukup';
+        batteryStatus.textContent = 'Baterai Cukup' + statusSuffix;
       } else if (percentage >= 25) {
         batteryIcon.classList.add('bi-battery-half', 'text-warning');
         batteryPercentage.classList.add('text-warning');
-        batteryStatus.textContent = 'Baterai Sedang';
+        batteryStatus.textContent = 'Baterai Sedang' + statusSuffix;
       } else {
         batteryIcon.classList.add('bi-battery', 'text-danger');
         batteryPercentage.classList.add('text-danger');
-        batteryStatus.textContent = 'Baterai Rendah';
+        batteryStatus.textContent = 'Baterai Rendah' + statusSuffix;
       }
     }
 
@@ -521,7 +730,14 @@
       batteryPercentage.textContent = '--';
       batteryPercentage.className = 'battery-percentage text-muted';
       batteryIcon.className = 'bi bi-battery battery-icon text-muted';
-      batteryStatus.textContent = 'Masukkan persentase baterai';
+      
+      if (selectedBatteryType) {
+        const config = BATTERY_CONFIGS[selectedBatteryType];
+        batteryStatus.textContent = `${config.name} - Masukkan persentase baterai`;
+      } else {
+        batteryStatus.textContent = 'Pilih tipe baterai dan masukkan persentase';
+      }
+      
       progressFill.style.width = '0%';
       results.style.display = 'none';
     }
@@ -539,6 +755,11 @@
       const input = parseFloat(batteryInput.value);
       
       // Validation
+      if (!selectedBatteryType) {
+        showError('Pilih tipe baterai terlebih dahulu');
+        return;
+      }
+      
       if (isNaN(input) || input < 0 || input > 100) {
         showError('Masukkan angka antara 0 hingga 100');
         return;
@@ -549,7 +770,7 @@
       // Simulate calculation delay for better UX
       setTimeout(() => {
         try {
-          const calculations = performCalculations(input);
+          const calculations = performCalculations(input, selectedBatteryType);
           updateBatteryDisplay(input);
           displayResults(calculations);
           saveBatteryLevel(input);
@@ -562,14 +783,21 @@
       }, 300);
     }
 
-    function performCalculations(batteryLevel) {
-      // Distance calculation
-      const remainingDistance = (batteryLevel / 100) * CONFIG.TOTAL_DISTANCE;
+    function performCalculations(batteryLevel, batteryType) {
+      const config = BATTERY_CONFIGS[batteryType];
+      const chargerConfig = CHARGER_CONFIG.batterySpecific[batteryType];
       
-      // Charging time calculation
+      // Distance calculation - based on real world usage
+      const remainingDistance = (batteryLevel / 100) * config.totalDistance * config.realWorldFactor;
+      
+      // Charging time calculation - based on real charging data
       const remainingCapacity = 100 - batteryLevel;
-      const energyNeeded = (remainingCapacity / 100) * CONFIG.BATTERY_CAPACITY_WH;
-      const chargingTimeHours = (energyNeeded / CONFIG.CHARGER_POWER) * CONFIG.CHARGING_EFFICIENCY;
+      let chargingTimeHours = remainingCapacity / chargerConfig.realChargingRate;
+      
+      // Add buffer time for true 100% charge
+      if (batteryLevel < 95) {
+        chargingTimeHours += chargerConfig.fullChargeBuffer;
+      }
       
       // Completion time calculation
       const now = new Date();
@@ -579,7 +807,10 @@
         remainingDistance: remainingDistance.toFixed(1),
         chargingTimeHours: chargingTimeHours,
         completionTime: completionTime,
-        powerConsumption: CONFIG.POWER_CONSUMPTION_PER_KM.toFixed(1)
+        powerConsumption: config.powerConsumptionPerKm.toFixed(1),
+        batteryType: batteryType,
+        batteryName: config.name,
+        chargerInfo: `${chargerConfig.avgPower.toFixed(0)}W avg`
       };
     }
 
@@ -599,7 +830,8 @@
       document.getElementById('distance-remaining').textContent = calc.remainingDistance + ' km';
       document.getElementById('charging-time').textContent = chargingTimeText;
       document.getElementById('completion-time').textContent = completionTimeText;
-      document.getElementById('power-consumption').textContent = calc.powerConsumption + ' Wh/km';
+      // document.getElementById('power-consumption').textContent = calc.powerConsumption + ' Wh/km';
+      // document.getElementById('charger-info').textContent = calc.chargerInfo || '--';
       
       // Show results with animation
       results.style.display = 'block';
@@ -631,16 +863,25 @@
       // For now, it's just a placeholder for future enhancements
     }
 
-    // PWA Service Worker Registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered successfully:', registration.scope);
-        })
-        .catch(error => {
-          console.log('Service Worker registration failed:', error);
-        });
-    }
+    // Event listeners
+    batteryInput.addEventListener('input', function(event) {
+      const value = parseFloat(event.target.value);
+      if (!isNaN(value) && value >= 0 && value <= 100 && selectedBatteryType) {
+        updateBatteryDisplay(value);
+        clearTimeout(lastCalculationTime);
+        lastCalculationTime = setTimeout(() => {
+          calculateAll();
+        }, 500); // Debounce calculation
+      } else if (!selectedBatteryType) {
+        resetDisplay();
+      }
+    });
+
+    batteryInput.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        calculateAll();
+      }
+    });
 
     // Prevent form submission on Enter key
     document.addEventListener('keypress', function(event) {
